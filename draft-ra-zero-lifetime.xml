@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="US-ASCII"?>
+<!DOCTYPE rfc SYSTEM "rfc2629.dtd" [
+<!ENTITY RFC2119 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.2119.xml">
+<!ENTITY RFC4862 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.4862.xml">
+<!ENTITY RFC6459 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.6459.xml">
+]>
+<?xml-stylesheet type='text/xsl' href='rfc2629.xslt' ?>
+<!-- used by XSLT processors -->
+<!-- For a complete list and description of processing instructions (PIs),
+     please see http://xml.resource.org/authoring/README.html. -->
+<!-- Below are generally applicable Processing Instructions (PIs) that most I-Ds might want to use.
+     (Here they are set differently than their defaults in xml2rfc v1.32) -->
+<?rfc strict="yes" ?>
+<!-- give errors regarding ID-nits and DTD validation -->
+<!-- control the table of contents (ToC) -->
+<?rfc toc="yes"?>
+<!-- generate a ToC -->
+<?rfc tocdepth="4"?>
+<!-- the number of levels of subsections in ToC. default: 3 -->
+<!-- control references -->
+<?rfc symrefs="yes"?>
+<!-- use symbolic references tags, i.e, [RFC2119] instead of [1] -->
+<?rfc sortrefs="yes" ?>
+<!-- sort the reference entries alphabetically -->
+<!-- control vertical white space
+     (using these PIs as follows is recommended by the RFC Editor) -->
+<?rfc compact="yes" ?>
+<!-- do not start each main section on a new page -->
+<?rfc subcompact="no" ?>
+<!-- keep one blank line between list items -->
+<!-- end of list of popular I-D processing instructions -->
+<rfc ipr="trust200902"
+     updates="4862"
+     obsoletes=""
+     category="std"
+     docName="draft-zerorafolks-6man-ra-zero-lifetime-00">
+
+  <!-- category values: std, bcp, info, exp, and historic -->
+
+  <!-- ***** FRONT MATTER ***** -->
+
+  <front>
+    <!-- The abbreviated title is used in the page header - it is only necessary if the
+         full title is longer than 39 characters -->
+
+    <title>Zero valid lifetimes on point-to-point links</title>
+
+    <!-- add 'role="editor"' below for the editors if appropriate -->
+
+    <author fullname="Lorenzo Colitti" initials="L." surname="Colitti">
+      <organization>Google</organization>
+
+      <address>
+        <postal>
+          <street>Roppongi 6-10-1</street>
+          <city>Minato</city>
+          <region>Tokyo</region>
+          <code>106-6126</code>
+          <country>JP</country>
+        </postal>
+
+        <phone></phone>
+        <email>lorenzo@google.com</email>
+      </address>
+    </author>
+
+    <author fullname="Erik Kline" initials="E." surname="Kline">
+      <organization>Google</organization>
+
+      <address>
+        <postal>
+          <street>Roppongi 6-10-1</street>
+          <city>Minato</city>
+          <region>Tokyo</region>
+          <code>106-6126</code>
+          <country>JP</country>
+        </postal>
+
+        <phone></phone>
+        <email>ek@google.com</email>
+      </address>
+    </author>
+
+    <date/>
+
+    <!-- If the month and year are both specified and are the current ones, xml2rfc will fill
+         in the current day for you. If only the current year is specified, xml2rfc will fill
+	 in the current day and month for you. If the year is not the current one, it is
+	 necessary to specify at least a month (xml2rfc assumes day="1" if not specified for the
+	 purpose of calculating the expiry date).  With drafts it is normally sufficient to
+	 specify just the year. -->
+
+    <!-- Meta-data Declarations -->
+
+    <area>Internet</area>
+
+    <workgroup>IPv6 Maintenance</workgroup>
+
+    <!-- WG name at the upperleft corner of the doc,
+         IETF is fine for individual submissions.
+	 If this element is not present, the default is "Network Working Group",
+         which is used by the RFC Editor as a nod to the history of the IETF. -->
+
+    <keyword>template</keyword>
+
+    <!-- Keywords will be incorporated into HTML output
+         files in a meta tag but they have no effect on text or nroff
+         output. If you submit your draft to the RFC Editor, the
+         keywords will be used for the search engine. -->
+
+    <abstract>
+      <t>This document allows implementations to accept low or zero valid lifetimes in Router Advertisement Prefix Information Options in cases where it is known that there can only be one router on the link.</t>
+    </abstract>
+  </front>
+
+  <middle>
+    <section title="Introduction">
+
+      <t>Currently, Prefix Information Options in Router Advertisements cannot reduce the Valid Lifetime of an IPv6 address below 2 hours. This is due to an explicit restriction in Section 5.5.3 of <xref target="RFC4862"/>. The reason is to avoid a denial-of-service attack whereby a malicious attacker can cause a node's addresses to expire prematurely by sending a Router Advertisement with a low Valid Lifetime.</t>
+
+      <section title="Requirements Language">
+        <t>The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
+        "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this
+        document are to be interpreted as described in <xref
+        target="RFC2119">RFC 2119</xref>.</t>
+      </section>
+    </section>
+
+    <section title="Cases when it is useful to reduce Valid Lifetime to zero">
+      <t>In some cases, it is useful for the network to inform the host that a given prefix is no longer valid or will shortly no longer be valid. One example is if the host has moved beyond the mobility scope of the prefix and the network will no longer deliver packets for that prefix to the host. The host can thus terminate any upper-layer connections using that prefix and notify applications that continued communication will require using a new source address.</t>
+
+      <t>In order to ensure uninterrupted communications and no dispution to applications, this should be done only if the host already has other IPv6 addresses of equivalent scope and sufficient Valid Lifetime.</t>
+    </section>
+
+
+    <section title="Changes to RFC 4862">
+      <t>The following clause is added between points 1 and 2 of clause e, Section 5.5.3 of <xref target="RFC4862"/>:</t>
+      <t><list style="format 2. ">
+          <t>If the link-layer guarantees that there is only one node on the link from which the host can receive Router Advertiesements (e.g., if the link is a point-to-point link, such as a PPP link or a 3GPP link as defined in <xref target="RFC6459"></xref>), and the link has another prefix of the same scope with sufficient Valid Lifetime, set the valid lifetime of the corresponding address to the advertised Valid Lifetime.</t>
+      </list></t>
+    </section>
+
+
+    <section anchor="IANA" title="IANA Considerations">
+      <t>This memo includes no request to IANA.</t>
+    </section>
+
+    <section anchor="Security" title="Security Considerations">
+      <t>The denial-of-service attack that motivated this restriction cannot be mounted on a link where no other devices can send Router Advertisements to the host.</t>
+    </section>
+  </middle>
+
+  <!--  *****BACK MATTER ***** -->
+
+  <back>
+    <references title="Normative References">
+      &RFC4862;
+      &RFC2119;
+    </references>
+
+    <references title="Informative References">
+      &RFC6459;
+    </references>
+
+
+  </back>
+</rfc>
